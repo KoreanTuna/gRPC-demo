@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:grpc/grpc.dart';
 import 'package:grpc_study/core/util/grpc/grpc_bidirectional_stream_handler.dart';
 import 'package:grpc_study/core/util/logger.dart';
 import 'package:grpc_study/core/util/result.dart';
@@ -44,13 +43,11 @@ class _ChatSessionImpl implements ChatSession {
     required ChatGrpcMapper mapper,
     required String userName,
   }) : _handle = connection.handle,
-       _channel = connection.channel,
        _mapper = mapper,
        _userName = userName;
 
   final GrpcBidirectionalStreamHandle<ReceiveMessage, SendMessage, ChatMessage>
   _handle;
-  final ClientChannel _channel;
   final ChatGrpcMapper _mapper;
   final String _userName;
   bool _isClosed = false;
@@ -93,13 +90,6 @@ class _ChatSessionImpl implements ChatSession {
 
     await _handle.close();
 
-    try {
-      await _channel.shutdown();
-    } catch (error, stackTrace) {
-      logger.e(
-        'Failed to shutdown chat channel: $error',
-        stackTrace: stackTrace,
-      );
-    }
+    logger.d('Chat session closed');
   }
 }

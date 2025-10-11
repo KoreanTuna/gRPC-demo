@@ -1,6 +1,8 @@
 import 'package:grpc/grpc.dart';
 import 'package:grpc_study/core/util/grpc/grpc_datasource_base.dart';
 import 'package:grpc_study/core/util/result.dart';
+import 'package:grpc_study/core/util/grpc/grpc_option.dart';
+import 'package:grpc_study/environment/api_config.dart';
 import 'package:grpc_study/generated/google/protobuf/empty.pb.dart';
 import 'package:grpc_study/generated/token/dto/refresh_token_request.pb.dart';
 import 'package:grpc_study/generated/token/dto/refresh_token_response.pb.dart';
@@ -39,7 +41,10 @@ class AuthDatasource extends GrpcDatasourceBase {
     required LoginRequest request,
   }) async {
     return runUnary(
-      () => _userLoginClient.login(request, options: CallOptions()),
+      () => _userLoginClient.login(
+        request,
+        options: GrpcOptions.defaultCallOptions(),
+      ),
       debugLabel: 'signIn',
     );
   }
@@ -50,7 +55,10 @@ class AuthDatasource extends GrpcDatasourceBase {
   }) async {
     final request = RefreshTokenRequest()..refreshToken = refreshToken;
     return runUnary(
-      () => _tokenClient.refreshToken(request, options: CallOptions()),
+      () => _tokenClient.refreshToken(
+        request,
+        options: GrpcOptions.defaultCallOptions(),
+      ),
       debugLabel: 'refreshToken',
     );
   }
@@ -58,7 +66,12 @@ class AuthDatasource extends GrpcDatasourceBase {
   /// 로그아웃
   Future<Result<void>> logout() async {
     return runUnary(
-      () => userLogoutClient.logout(Empty(), options: CallOptions()),
+      () => userLogoutClient.logout(
+        Empty(),
+        options: GrpcOptions.defaultCallOptions(
+          meta: {ApiConfig.authFlagKey: 'true'},
+        ),
+      ),
       debugLabel: 'logout',
     );
   }

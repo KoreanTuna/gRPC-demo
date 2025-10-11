@@ -15,9 +15,14 @@ class LogoutUsecase {
   final AuthRepository _authRepository;
 
   Future<Result<void>> logout() async {
-    await _authRepository.logout();
+    final Result<void> logoutResult = await _authRepository.logout();
     await _tokenUsecase.deleteToken();
 
-    return const Result.ok(null);
+    if (logoutResult is Ok<void>) {
+      return const Result.ok(null);
+    }
+
+    final Error<void> error = logoutResult as Error<void>;
+    return Result.error(error.error);
   }
 }
