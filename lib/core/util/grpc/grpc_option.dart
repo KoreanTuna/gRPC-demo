@@ -7,4 +7,10 @@ class GrpcOptions {
       metadata: {'x-language-code': 'KO', if (meta != null) ...meta},
     );
   }
+
+  static CallOptions streamingCallOptions({Map<String, String>? meta}) {
+    return CallOptions(
+      metadata: {'x-language-code': 'KO', if (meta != null) ...meta},
+    );
+  }
 }

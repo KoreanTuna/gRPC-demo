@@ -30,6 +30,16 @@ import 'package:grpc_study/core/util/grpc/interceptor/grpc_auth_interceptor.dart
 import 'package:grpc_study/core/util/grpc/interceptor/grpc_logging_interceptor.dart'
     as _i869;
 import 'package:grpc_study/core/util/secure_storage_util.dart' as _i406;
+import 'package:grpc_study/feature/home/data/datasource/chat_datasource.dart'
+    as _i690;
+import 'package:grpc_study/feature/home/data/grpc_mapper/chat_grpc_mapper.dart'
+    as _i343;
+import 'package:grpc_study/feature/home/data/repository/chat_repository_impl.dart'
+    as _i806;
+import 'package:grpc_study/feature/home/domain/repository/chat_repository.dart'
+    as _i724;
+import 'package:grpc_study/feature/home/domain/usecase/chat_usecase.dart'
+    as _i354;
 import 'package:grpc_study/feature/home/presentation/view_model/home_view_model.dart'
     as _i815;
 import 'package:grpc_study/feature/login/domain/login_usecase.dart' as _i905;
@@ -49,6 +59,7 @@ extension GetItInjectableX on _i174.GetIt {
     final goRouterModule = _$GoRouterModule();
     final grpcModule = _$GrpcModule();
     gh.factory<_i249.AuthGrpcMapper>(() => _i249.AuthGrpcMapper());
+    gh.factory<_i343.ChatGrpcMapper>(() => _i343.ChatGrpcMapper());
     gh.singleton<_i558.FlutterSecureStorage>(
       () => secureStorageModule.createSecureStorage(),
     );
@@ -82,6 +93,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i27.TalkerGrpcLogger>(),
       ),
     );
+    gh.singleton<_i690.ChatDatasource>(
+      () => _i690.ChatDatasource(
+        gh<_i343.ChatGrpcMapper>(),
+        gh<List<_i1017.ClientInterceptor>>(),
+      ),
+    );
     gh.singleton<_i410.AuthDatasource>(
       () => _i410.AuthDatasource(
         gh<_i1017.ClientChannel>(instanceName: 'default_channel'),
@@ -92,6 +109,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i745.AuthRepositoryImpl(
         gh<_i410.AuthDatasource>(),
         gh<_i249.AuthGrpcMapper>(),
+      ),
+    );
+    gh.lazySingleton<_i724.ChatRepository>(
+      () => _i806.ChatRepositoryImpl(
+        gh<_i690.ChatDatasource>(),
+        gh<_i343.ChatGrpcMapper>(),
       ),
     );
     gh.lazySingleton<_i910.TokenUsecase>(
@@ -112,8 +135,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i910.TokenUsecase>(),
       ),
     );
+    gh.lazySingleton<_i354.ChatUsecase>(
+      () => _i354.ChatUsecase(gh<_i724.ChatRepository>()),
+    );
     gh.factory<_i815.HomeViewModel>(
-      () => _i815.HomeViewModel(gh<_i681.LogoutUsecase>()),
+      () => _i815.HomeViewModel(
+        gh<_i681.LogoutUsecase>(),
+        gh<_i354.ChatUsecase>(),
+      ),
     );
     gh.factory<_i511.LoginViewModel>(
       () => _i511.LoginViewModel(gh<_i905.LoginUsecase>()),
