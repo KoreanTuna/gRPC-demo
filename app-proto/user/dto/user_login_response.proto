@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package user.v1;
+
+option java_multiple_files = true;
+
+
+message LoginResponse {
+    string access_token = 1;
+    string refresh_token = 2;
+}

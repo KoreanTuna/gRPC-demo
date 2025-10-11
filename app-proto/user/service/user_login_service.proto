@@ -1,0 +1,12 @@
+syntax = "proto3";
+import "user/dto/user_login_request.proto";
+import "user/dto/user_login_response.proto";
+
+package user.v1;
+
+option java_multiple_files = true;
+
+service UserLoginService {
+  rpc Login (LoginRequest) returns (LoginResponse);
+}
+

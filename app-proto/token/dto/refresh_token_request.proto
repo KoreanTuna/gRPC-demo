@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package token.v1;
+option java_multiple_files = true;
+
+message RefreshTokenRequest {
+    string refresh_token = 1;
+}

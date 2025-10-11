@@ -6,13 +6,15 @@ import 'package:grpc_study/common/domain/usecase/token_usecase.dart';
 import 'package:grpc_study/core/util/logger.dart';
 import 'package:grpc_study/core/util/secure_storage_util.dart';
 import 'package:grpc_study/environment/api_config.dart';
-import 'package:grpc_study/environment/di/get_it.dart';
 
 class AuthInterceptor implements ClientInterceptor {
-  AuthInterceptor(this.secureStorageUtil, this.tokenUsecase);
+  AuthInterceptor(
+    this.secureStorageUtil,
+    this._tokenUsecase,
+  );
 
   final SecureStorageUtil secureStorageUtil;
-  final TokenUsecase tokenUsecase;
+  final TokenUsecase Function() _tokenUsecase;
 
   bool _shouldInject(ClientMethod method, CallOptions options) {
     // 1) 메타데이터 플래그 우선
@@ -82,7 +84,7 @@ class AuthInterceptor implements ClientInterceptor {
           if (shouldRetry) {
             hasRetried = true;
             logger.d('Unauthenticated - try to refresh token');
-            final refreshResult = await tokenUsecase.refreshToken();
+            final refreshResult = await _tokenUsecase().refreshToken();
 
             final refreshed = refreshResult.map(
               ok: (_) => true,
@@ -145,7 +147,7 @@ class AuthInterceptor implements ClientInterceptor {
       response.trailers.catchError((error, _) async {
         if (error is GrpcError && error.code == StatusCode.unauthenticated) {
           logger.d('Unauthenticated (streaming) - try to refresh token');
-          final result = await locator<TokenUsecase>().refreshToken();
+          final result = await _tokenUsecase().refreshToken();
           result.when(
             ok: (_) {
               logger.d('Token refreshed (streaming)');

@@ -1,6 +1,12 @@
 import 'package:grpc/grpc.dart';
 import 'package:grpc_study/core/util/grpc/grpc_datasource_base.dart';
 import 'package:grpc_study/core/util/result.dart';
+import 'package:grpc_study/generated/token/dto/refresh_token_request.pb.dart';
+import 'package:grpc_study/generated/token/dto/refresh_token_response.pb.dart';
+import 'package:grpc_study/generated/token/service/token_service.pbgrpc.dart';
+import 'package:grpc_study/generated/user/dto/user_login_request.pb.dart';
+import 'package:grpc_study/generated/user/dto/user_login_response.pb.dart';
+import 'package:grpc_study/generated/user/service/user_login_service.pbgrpc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
 
@@ -11,32 +17,35 @@ class AuthDatasource extends GrpcDatasourceBase {
     super.interceptors,
   );
 
-  late final MemberLoginServiceClient _memberLoginClient = createClient(
-    MemberLoginServiceClient.new,
+  late final UserLoginServiceClient _userLoginClient = createClient(
+    UserLoginServiceClient.new,
+  );
+
+  late final TokenServiceClient _tokenClient = createClient(
+    TokenServiceClient.new,
   );
 
   @visibleForTesting
   ClientChannel get debugChannel => channel;
 
   /// 로그인
-  Future<Result<MemberLoginResponse>> signIn({
-    required MemberLoginRequest request,
+  Future<Result<LoginResponse>> signIn({
+    required LoginRequest request,
   }) async {
     return runUnary(
-      () => _memberLoginClient.memberLogin(request, options: CallOptions()),
-      onGrpcError: (exception) {
-        if (exception.hasCustomErrorCode()) {
-          return KondaSignInException(
-            exception.message,
-            code: exception.code,
-            rawResponse: exception.rawResponse,
-            trailers: exception.trailers,
-            details: exception.details,
-          );
-        }
-        return null;
-      },
+      () => _userLoginClient.login(request, options: CallOptions()),
       debugLabel: 'signIn',
+    );
+  }
+
+  /// 토큰 리프레시
+  Future<Result<RefreshTokenResponse>> refreshToken({
+    required String refreshToken,
+  }) async {
+    final request = RefreshTokenRequest()..refreshToken = refreshToken;
+    return runUnary(
+      () => _tokenClient.refreshToken(request, options: CallOptions()),
+      debugLabel: 'refreshToken',
     );
   }
 }

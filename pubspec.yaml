@@ -47,6 +47,7 @@ dependencies:
   talker_grpc_logger: ^5.0.0
   talker_flutter: ^5.0.0
   async: ^2.13.0
+  flutter_hooks: ^0.21.3+1
 
 dev_dependencies:
   flutter_test:
@@ -61,7 +62,20 @@ dev_dependencies:
 
   # Source Gen
   build_runner: ^2.6.0
+
+  # GoRouter Source Gen
   go_router_builder: ^4.1.0
 
 flutter:
   uses-material-design: true
+
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/PretendardVariable.ttf
+    - family: Jalnan
+      fonts:
+        - asset: assets/fonts/Jalnan2TTF.ttf
+    - family: JalnanGothic
+      fonts:
+        - asset: assets/fonts/JalnanGothicTTF.ttf

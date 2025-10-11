@@ -1,0 +1,13 @@
+syntax = "proto3";
+import "token/dto/refresh_token_request.proto"; 
+import "token/dto/refresh_token_response.proto";
+
+package token.v1;
+
+option java_multiple_files = true;
+
+
+
+service TokenService {
+    rpc refreshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
+}

@@ -1,0 +1,28 @@
+{
+  "Generate freezed class": {
+    "prefix": "freezed",
+    "body": [
+      "import 'package:freezed_annotation/freezed_annotation.dart';",
+      "",
+      "part '${TM_FILENAME_BASE}.freezed.dart';",
+      "part '${TM_FILENAME_BASE}.g.dart';",
+      "",
+      "@JsonSerializable()",
+      "@freezed",
+      "class ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}${2}/} with _$${TM_FILENAME_BASE/(.*)/${1:/pascalcase}${2}/} {",
+
+      " final String id;",
+
+      " const ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}${2}/}({",
+      "    required this.id,",
+      " });",
+      "",
+      "  factory ${TM_FILENAME_BASE/(.*)/${1:/pascalcase}${2}/}.fromJson(Map<String, Object?> json) => ",
+      "      _$${TM_FILENAME_BASE/(.*)/${1:/pascalcase}${2}/}FromJson(json);",
+
+      " Map<String, dynamic> toJson() => _$${TM_FILENAME_BASE/(.*)/${1:/pascalcase}${2}/}ToJson(this);",
+
+      "}"
+    ]
+  }
+}
