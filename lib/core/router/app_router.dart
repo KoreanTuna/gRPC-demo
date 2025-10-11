@@ -6,6 +6,7 @@ import 'package:grpc_study/feature/home/presentation/view_model/home_view_model.
 import 'package:grpc_study/feature/login/presentation/login_screen.dart';
 import 'package:grpc_study/feature/login/presentation/view_model/login_view_model.dart';
 import 'package:grpc_study/feature/splash/presentation/splash_screen.dart';
+import 'package:grpc_study/feature/splash/presentation/view_model/splash_view_model.dart';
 
 part 'app_router.g.dart';
 
@@ -20,7 +21,9 @@ class SplashRoute extends GoRouteData with $SplashRoute {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const SplashScreen();
+    return SplashScreen(
+      viewModel: locator<SplashViewModel>(),
+    );
   }
 }
 

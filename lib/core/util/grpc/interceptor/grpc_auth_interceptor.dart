@@ -63,7 +63,7 @@ class AuthInterceptor implements ClientInterceptor {
       Future<void> performCall() async {
         final response = invoker(method, request, mergedOptions);
         currentResponse = response;
-        proxy.updateCancel(() => response.cancel());
+        proxy.updateCancel(response.cancel);
 
         try {
           final value = await response;

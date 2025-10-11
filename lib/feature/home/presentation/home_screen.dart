@@ -36,15 +36,11 @@ class HomeScreen extends BaseScreen {
         );
       });
 
-      return () {
-        errorSub.cancel();
-      };
+      return errorSub.cancel;
     }, const []);
 
     useEffect(() {
-      return () {
-        viewModel.dispose();
-      };
+      return viewModel.dispose;
     }, const []);
 
     final messages = messagesSnapshot.data ?? const <ChatMessage>[];
@@ -73,7 +69,7 @@ class HomeScreen extends BaseScreen {
                   ),
                   decoration: BoxDecoration(
                     color: isUser
-                        ? Colors.blueAccent.withOpacity(0.8)
+                        ? Colors.blueAccent.withValues(alpha: 0.8)
                         : Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -92,7 +88,7 @@ class HomeScreen extends BaseScreen {
                         style: TextStyle(
                           color: isUser
                               ? Colors.white70
-                              : Colors.black.withOpacity(0.6),
+                              : Colors.black.withValues(alpha: 0.6),
                           fontSize: 10,
                         ),
                       ),

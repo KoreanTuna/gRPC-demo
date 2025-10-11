@@ -45,6 +45,8 @@ import 'package:grpc_study/feature/home/presentation/view_model/home_view_model.
 import 'package:grpc_study/feature/login/domain/login_usecase.dart' as _i905;
 import 'package:grpc_study/feature/login/presentation/view_model/login_view_model.dart'
     as _i511;
+import 'package:grpc_study/feature/splash/presentation/view_model/splash_view_model.dart'
+    as _i1020;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:talker_grpc_logger/talker_grpc_logger.dart' as _i27;
 
@@ -137,6 +139,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i354.ChatUsecase>(
       () => _i354.ChatUsecase(gh<_i724.ChatRepository>()),
+    );
+    gh.factory<_i1020.SplashViewModel>(
+      () => _i1020.SplashViewModel(
+        gh<_i910.TokenUsecase>(),
+        gh<_i681.LogoutUsecase>(),
+      ),
     );
     gh.factory<_i815.HomeViewModel>(
       () => _i815.HomeViewModel(

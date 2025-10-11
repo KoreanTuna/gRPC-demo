@@ -6,7 +6,7 @@ String protoJsonWithDefaults(Object? obj) => jsonEncode(_encode(obj));
 dynamic _encode(dynamic v) {
   if (v is GeneratedMessage) {
     final out = <String, dynamic>{};
-    final fields = (v.info_.fieldInfo).values;
+    final fields = v.info_.fieldInfo.values;
     for (final fi in fields) {
       final value = v.getField(fi.tagNumber);
       out[fi.name] = _encode(value);
