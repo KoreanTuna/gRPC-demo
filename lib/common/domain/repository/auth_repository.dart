@@ -8,4 +8,6 @@ abstract interface class AuthRepository {
   });
 
   Future<Result<TokenEntity>> refreshToken({required String refreshToken});
+
+  Future<Result<void>> logout();
 }

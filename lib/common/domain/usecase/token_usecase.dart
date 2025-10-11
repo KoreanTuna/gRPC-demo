@@ -21,4 +21,29 @@ class TokenUsecase {
     }
     return _authRepository.refreshToken(refreshToken: refreshToken);
   }
+
+  Future<void> _saveAccessToken(String accessToken) async {
+    await _secureStorageUtil.saveAccessToken(accessToken);
+  }
+
+  Future<void> _saveRefreshToken(String refreshToken) async {
+    await _secureStorageUtil.saveRefreshToken(refreshToken);
+  }
+
+  Future<void> saveToken({
+    required String accessToken,
+    required String refreshToken,
+  }) async {
+    await Future.wait([
+      _saveAccessToken(accessToken),
+      _saveRefreshToken(refreshToken),
+    ]);
+  }
+
+  Future<void> deleteToken() async {
+    await Future.wait([
+      _secureStorageUtil.deleteAccessToken(),
+      _secureStorageUtil.deleteRefreshToken(),
+    ]);
+  }
 }

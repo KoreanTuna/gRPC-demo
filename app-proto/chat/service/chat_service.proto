@@ -1,0 +1,13 @@
+syntax = "proto3";
+import "chat/dto/receive_message.proto";
+import "chat/dto/send_message.proto";
+
+package chat.v1;
+
+option java_multiple_files = true;
+
+
+
+service ChatService {
+    rpc openChatConnection (stream ReceiveMessage) returns (stream SendMessage);
+} 

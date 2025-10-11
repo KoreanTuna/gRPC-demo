@@ -1,12 +1,17 @@
 import 'dart:io';
 
 import 'package:grpc/grpc.dart';
+import 'package:grpc_study/generated/chat/dto/receive_message.pb.dart';
+import 'package:grpc_study/generated/chat/dto/send_message.pb.dart';
+import 'package:grpc_study/generated/chat/service/chat_service.pbgrpc.dart';
+import 'package:grpc_study/generated/google/protobuf/empty.pb.dart';
 import 'package:grpc_study/generated/token/dto/refresh_token_request.pb.dart';
 import 'package:grpc_study/generated/token/dto/refresh_token_response.pb.dart';
 import 'package:grpc_study/generated/token/service/token_service.pbgrpc.dart';
 import 'package:grpc_study/generated/user/dto/user_login_request.pb.dart';
 import 'package:grpc_study/generated/user/dto/user_login_response.pb.dart';
 import 'package:grpc_study/generated/user/service/user_login_service.pbgrpc.dart';
+import 'package:grpc_study/generated/user/service/user_logout_service.pbgrpc.dart';
 
 class UserLoginService extends UserLoginServiceBase {
   @override
@@ -34,6 +39,30 @@ class TokenService extends TokenServiceBase {
   }
 }
 
+class UserLogoutService extends UserLogoutServiceBase {
+  @override
+  Future<Empty> logout(ServiceCall call, Empty request) async {
+    return Empty();
+  }
+}
+
+class ChatService extends ChatServiceBase {
+  @override
+  Stream<SendMessage> openChatConnection(
+    ServiceCall call,
+    Stream<ReceiveMessage> request,
+  ) async* {
+    await for (final receiveMessage in request) {
+      final sendMessage = SendMessage()
+        ..id = receiveMessage.id
+        ..message = receiveMessage.message
+        ..timestamp = receiveMessage.timestamp
+        ..type = receiveMessage.type;
+      yield sendMessage;
+    }
+  }
+}
+
 Future<void> main(List<String> args) async {
   final certificate = File('certs/server.pem').readAsBytesSync();
   final privateKey = File('certs/server.key').readAsBytesSync();
@@ -41,6 +70,8 @@ Future<void> main(List<String> args) async {
     services: [
       UserLoginService(),
       TokenService(),
+      UserLogoutService(),
+      ChatService(),
     ],
     codecRegistry: CodecRegistry(codecs: const [GzipCodec(), IdentityCodec()]),
     serverInterceptors: [
@@ -67,7 +98,7 @@ class CustomServerInterceptor extends ServerInterceptor {
   ) {
     print('''
 ------------------------------------------------
-요청: ${method.name},
+[요청]: ${method.name},
 $requests
 ------------------------------------------------
 ''');
@@ -75,9 +106,9 @@ $requests
     return responseStream.map((response) {
       print('''
 ------------------------------------------------
-응답: ${method.name},
+[응답]: ${method.name},
 $response
-------------------------------------------------
+------------------------------------------------\
 ''');
       return response;
     });

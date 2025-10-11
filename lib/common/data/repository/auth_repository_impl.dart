@@ -50,4 +50,9 @@ class AuthRepositoryImpl implements AuthRepository {
       error: Result.error,
     );
   }
+
+  @override
+  Future<Result<void>> logout() {
+    return _authDatasource.logout();
+  }
 }

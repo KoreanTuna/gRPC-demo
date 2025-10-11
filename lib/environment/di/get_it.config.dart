@@ -21,6 +21,7 @@ import 'package:grpc_study/common/data/repository/auth_repository_impl.dart'
     as _i745;
 import 'package:grpc_study/common/domain/repository/auth_repository.dart'
     as _i957;
+import 'package:grpc_study/common/domain/usecase/logout_usecase.dart' as _i681;
 import 'package:grpc_study/common/domain/usecase/token_usecase.dart' as _i910;
 import 'package:grpc_study/core/router/go_router.dart' as _i524;
 import 'package:grpc_study/core/util/grpc/grpc_module.dart' as _i311;
@@ -29,6 +30,8 @@ import 'package:grpc_study/core/util/grpc/interceptor/grpc_auth_interceptor.dart
 import 'package:grpc_study/core/util/grpc/interceptor/grpc_logging_interceptor.dart'
     as _i869;
 import 'package:grpc_study/core/util/secure_storage_util.dart' as _i406;
+import 'package:grpc_study/feature/home/presentation/view_model/home_view_model.dart'
+    as _i815;
 import 'package:grpc_study/feature/login/domain/login_usecase.dart' as _i905;
 import 'package:grpc_study/feature/login/presentation/view_model/login_view_model.dart'
     as _i511;
@@ -98,7 +101,19 @@ extension GetItInjectableX on _i174.GetIt {
       ),
     );
     gh.lazySingleton<_i905.LoginUsecase>(
-      () => _i905.LoginUsecase(gh<_i957.AuthRepository>()),
+      () => _i905.LoginUsecase(
+        gh<_i957.AuthRepository>(),
+        gh<_i910.TokenUsecase>(),
+      ),
+    );
+    gh.lazySingleton<_i681.LogoutUsecase>(
+      () => _i681.LogoutUsecase(
+        gh<_i957.AuthRepository>(),
+        gh<_i910.TokenUsecase>(),
+      ),
+    );
+    gh.factory<_i815.HomeViewModel>(
+      () => _i815.HomeViewModel(gh<_i681.LogoutUsecase>()),
     );
     gh.factory<_i511.LoginViewModel>(
       () => _i511.LoginViewModel(gh<_i905.LoginUsecase>()),

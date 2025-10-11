@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package user.v1;
+
+option java_multiple_files = true;
+
+service UserLogoutService {
+  rpc Logout(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

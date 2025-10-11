@@ -1,0 +1,21 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+package chat.v1;
+option java_multiple_files = true;
+
+message SendMessage {
+    string id = 1;
+    string message = 2;
+    google.protobuf.Timestamp timestamp = 3;
+    MessageType type = 4;
+
+   
+}
+
+ enum MessageType {
+        UNKNOWN = 0;
+        TEXT = 1;
+        IMAGE = 2;
+        VIDEO = 3;
+    }

@@ -1,0 +1,14 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+import "chat/dto/send_message.proto";
+
+package chat.v1;
+option java_multiple_files = true;
+
+message ReceiveMessage {
+    string id = 1;
+    string message = 2;
+    string userName = 3;
+    google.protobuf.Timestamp timestamp = 4;
+    MessageType type = 5;
+}

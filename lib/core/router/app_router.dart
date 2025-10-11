@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:grpc_study/environment/di/get_it.dart';
 import 'package:grpc_study/feature/home/presentation/home_screen.dart';
+import 'package:grpc_study/feature/home/presentation/view_model/home_view_model.dart';
 import 'package:grpc_study/feature/login/presentation/login_screen.dart';
 import 'package:grpc_study/feature/login/presentation/view_model/login_view_model.dart';
 import 'package:grpc_study/feature/splash/presentation/splash_screen.dart';
@@ -47,6 +48,8 @@ class HomeRoute extends GoRouteData with $HomeRoute {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const HomeScreen();
+    return HomeScreen(
+      viewModel: locator<HomeViewModel>(),
+    );
   }
 }
