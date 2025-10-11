@@ -11,13 +11,13 @@ data layer에 있는 각 도메인/기능 별 datasource들은 gRPC module의 �
 
 # gRPC Proto 파일 생성 명령어
 
----bash
+```bash
 protoc \
  -I=app-proto \
  -I="$(brew --prefix)/include" \
- $(find app-proto -name '\*.proto') \
+ $(find app-proto -name '*.proto') \
  --dart_out=grpc:lib/generated/ \
  google/protobuf/empty.proto \
  google/protobuf/timestamp.proto
 
----
+```
