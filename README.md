@@ -36,11 +36,11 @@ flowchart TD
     Z([종료])
 
     A --> B
-    B -->|아니오| C[invoker]
+    B -->|아니오| C[그대로 호출]
     C --> Z
 
     B -->|예| D[토큰 읽기 → Authorization 주입]
-    D --> E[호출(invoker with token)]
+    D --> E[호출]
     E -->|성공| Z
     E -->|에러| G{UNAUTHENTICATED &&\n재시도 안함?}
     G -->|아니오| Z
