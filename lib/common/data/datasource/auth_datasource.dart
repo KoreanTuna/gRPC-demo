@@ -43,7 +43,9 @@ class AuthDatasource extends GrpcDatasourceBase {
     return runUnary(
       () => _userLoginClient.login(
         request,
-        options: GrpcOptions.defaultCallOptions(),
+        options: GrpcOptions.defaultCallOptions(
+          meta: {ApiConfig.authFlagKey: 'true'},
+        ),
       ),
       debugLabel: 'signIn',
     );
