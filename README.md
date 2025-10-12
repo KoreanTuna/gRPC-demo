@@ -44,7 +44,7 @@ flowchart TD
     E -->|성공| Z
     E -->|에러| G{UNAUTHENTICATED &&\n재시도 안함?}
     G -->|아니오| Z
-    G -->|예| H[refreshToken()]
+    G -->|예| H[refreshToken]
     H -->|실패| Z
     H -->|성공| J[토큰-재주입-후-재호출]
     J -->|성공| Z
