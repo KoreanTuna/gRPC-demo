@@ -28,67 +28,6 @@ data layer에 있는 각 도메인/기능 별 datasource들은 gRPC module의 �
 3. `LoggingInterceptor`가 요청/응답 Proto를 JSON으로 직렬화해 디버깅 로그를 남깁니다.
 
 
-### Unary Auth Intercepot
-```mermaid
-sequenceDiagram
-    autonumber
-    participant APP as App(호출부)
-    participant INT as AuthInterceptor
-    participant SEC as SecureStorageUtil
-    participant TOK as TokenUsecase
-    participant SRV as gRPC Server
-
-    APP->>INT: interceptUnary(method, request, options)
-    INT->>INT: _shouldInject(options.metadata)
-    alt authFlagKey == "true"
-        Note over INT: 토큰 주입을 위한 CallOptions 병합
-        INT->>INT: options.mergedWith(providers:[_attachAccessToken])
-        INT->>SEC: getAccessToken()
-        SEC-->>INT: "Bearer <token>"
-        INT->>SRV: invoker(method, request, mergedOptions + Authorization)
-        SRV-->>INT: ResponseFuture<R> (headers/body/trailers)
-
-        alt 응답 성공
-            INT->>INT: _completeMetadata(response.headers/trailers)
-            INT-->>APP: value (ResponseFuture 완료)
-        else 에러 발생
-            INT->>INT: _shouldRetryAfterRefreshingToken(error, hasRetried=false)
-            alt error == UNAUTHENTICATED && hasRetried == false
-                INT->>TOK: refreshToken()
-                TOK-->>INT: success?
-                alt refresh 성공
-                    Note over INT: hasRetried = true<br/>같은 invoker로 재호출(루프)
-                    INT->>SRV: invoker(method, request, mergedOptions) (재시도)
-                    SRV-->>INT: ResponseFuture<R>
-                    alt 재시도 성공
-                        INT->>INT: _completeMetadata(response.headers/trailers)
-                        INT-->>APP: value
-                    else 재시도도 실패
-                        INT->>INT: _completeMetadata(response.headers/trailers)
-                        INT-->>APP: error
-                    end
-                else refresh 실패
-                    INT->>INT: _completeMetadata(response.headers/trailers)
-                    INT-->>APP: error
-                end
-            else 재시도 불가(다른 에러 또는 이미 재시도함)
-                INT->>INT: _completeMetadata(response.headers/trailers)
-                INT-->>APP: error
-            end
-        end
-    else authFlagKey 미설정/false
-        INT->>SRV: invoker(method, request, options) (토큰 주입 없음)
-        SRV-->>INT: ResponseFuture<R>
-        INT-->>APP: value/error
-    end
-
-    rect rgba(0,0,0,0.03)
-    note over APP,INT: cancel() 흐름
-    APP->>INT: cancel()
-    INT->>INT: proxy.updateCancel(response.cancel)
-    INT-->>APP: cancel 완료 (현재 response.cancel 위임)
-    end
-```
 
 ### 3. 채팅 양방향 스트리밍
 ```mermaid
