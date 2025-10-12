@@ -42,7 +42,7 @@ flowchart TD
     B -->|예| D[토큰 읽기 → 토큰 주입 ]
     D --> E[호출]
     E -->|성공| Z
-    E -->|에러| G{UNAUTHENTICATED 재시도}
+    E -->|에러| G{UNAUTHENTICATED 에러}
     G -->|아니오| Z
     G -->|예| H[refreshToken]
     H -->|실패| Z
