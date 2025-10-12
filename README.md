@@ -31,7 +31,7 @@ data layer에 있는 각 도메인/기능 별 datasource들은 gRPC module의 �
 ### Auth Interceptor
 ```mermaid
 flowchart TD
-    A[Client 호출] --> B{authFlag == "true"?}
+    A[Client 호출] --> B{authFlag == "true"}
     B -- 아니오 --> C[그대로 호출(invoker)]
     C --> Z[결과 반환]
 
