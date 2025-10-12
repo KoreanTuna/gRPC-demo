@@ -31,23 +31,20 @@ data layer에 있는 각 도메인/기능 별 datasource들은 gRPC module의 �
 ### Auth Interceptor
 ```mermaid
 flowchart TD
-    A[Client 호출] --> B{authFlag == "true"}
-    B -- 아니오 --> C[그대로 호출(invoker)]
+    A[Client 호출] --> B{authFlag == true?}
+    B -->|아니오| C[그대로 호출(invoker)]
     C --> Z[결과 반환]
 
-    B -- 예 --> D[토큰 읽기(SecureStorage)\nAuthorization: Bearer <token> 주입]
+    B -->|예| D[토큰 읽기 → Authorization 주입]
     D --> E[호출(invoker with token)]
-    E --> F{성공?}
-    F -- 예 --> Z
-    F -- 아니오 --> G{에러 == UNAUTHENTICATED\n그리고 아직 재시도 안함?}
-    G -- 아니오 --> Z[에러 반환]
-    G -- 예 --> H[refreshToken()]
-    H --> I{갱신 성공?}
-    I -- 아니오 --> Z[에러 반환]
-    I -- 예 --> J[토큰 재주입 후 재호출]
-    J --> K{성공?}
-    K -- 예 --> Z
-    K -- 아니오 --> Z[에러 반환]
+    E -->|성공| Z
+    E -->|에러| G{UNAUTHENTICATED 이고<br/>재시도 안함?}
+    G -->|아니오| Z[에러 반환]
+    G -->|예| H[refreshToken()]
+    H -->|실패| Z[에러 반환]
+    H -->|성공| J[토큰 재주입 후 재호출]
+    J -->|성공| Z
+    J -->|실패| Z[에러 반환]
 ```
 
 ### 3. 채팅 양방향 스트리밍
