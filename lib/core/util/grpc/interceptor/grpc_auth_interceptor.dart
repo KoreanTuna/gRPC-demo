@@ -82,6 +82,7 @@ class AuthInterceptor implements ClientInterceptor {
     metadata['Authorization'] = 'Bearer $token';
   }
 
+  // 인터셉터에서 Future를 즉시 반환해야 하므로, 실제 네트워크 호출은 백그라운드에서 시작한다.
   void _startUnaryCall<Q, R>({
     required ClientMethod<Q, R> method,
     required Q request,
@@ -110,14 +111,17 @@ class AuthInterceptor implements ClientInterceptor {
     required _UnaryCallContext<R> context,
     required _RetryingUnaryResponseFuture<R> proxy,
   }) async {
+    // Unauthenticated 에러 발생 후 토큰 갱신에 성공했을 때 한 번만 재시도한다.
     bool hasRetried = false;
 
     while (true) {
+      // 실제 gRPC 호출을 실행하고, 취소 신호를 전달할 수 있도록 context에 저장한다.
       final response = invoker(method, request, options);
       context.currentResponse = response;
       proxy.updateCancel(response.cancel);
 
       try {
+        // 정상 응답이면 헤더/트레일러도 함께 완성하고 결과를 전달한다.
         final value = await response;
         await _completeMetadata(
           response,
@@ -129,11 +133,13 @@ class AuthInterceptor implements ClientInterceptor {
         }
         return;
       } on Object catch (error, stackTrace) {
+        // 인증 실패라면 토큰을 갱신하고 재시도할지 결정한다.
         final shouldRetry = await _shouldRetryAfterRefreshingToken(
           error: error,
           hasRetried: hasRetried,
         );
 
+        // 오류가 발생해도 헤더/트레일러를 받을 수 있도록 시도한다.
         await _completeMetadata(
           response,
           context.headersCompleter,
@@ -141,11 +147,13 @@ class AuthInterceptor implements ClientInterceptor {
         );
 
         if (shouldRetry) {
+          // 토큰 갱신이 성공한 경우 한 번만 루프를 반복한다.
           hasRetried = true;
           continue;
         }
 
         if (!context.resultCompleter.isCompleted) {
+          // 재시도 불가라면 원래 오류를 그대로 전달한다.
           context.resultCompleter.completeError(error, stackTrace);
         }
         return;
@@ -248,19 +256,26 @@ Future<void> _completeMetadata(
 }
 
 class _UnaryCallContext<R> {
+  // 특정 gRPC 호출과 관련된 상태를 묶어둔 컨테이너 역할을 한다.
   _UnaryCallContext()
     : resultCompleter = Completer<R>(),
       headersCompleter = Completer<Map<String, String>>(),
       trailersCompleter = Completer<Map<String, String>>();
 
+  // 재시도 중에도 같은 Future 인스턴스로 응답을 전달하기 위해 Completer를 유지한다.
   final Completer<R> resultCompleter;
+  // gRPC 응답 헤더를 외부에 지연 전달하기 위한 Completer.
   final Completer<Map<String, String>> headersCompleter;
+  // gRPC 트레일러를 외부에 지연 전달하기 위한 Completer.
   final Completer<Map<String, String>> trailersCompleter;
+  // 현재 진행 중인 실제 gRPC Response를 저장해 cancel 동작을 위임한다.
   Response? currentResponse;
 }
 
 class _RetryingUnaryResponseFuture<R> extends DelegatingFuture<R>
     implements ResponseFuture<R> {
+  // 실제 ResponseFuture 대신 노출할 프록시(대리인) 객체.
+  // 내부에서 새로운 Response를 받아도 외부에는 동일한 Future 인터페이스를 제공한다.
   _RetryingUnaryResponseFuture(
     super.future,
     this._headersCompleter,
@@ -272,6 +287,7 @@ class _RetryingUnaryResponseFuture<R> extends DelegatingFuture<R>
   final Completer<Map<String, String>> _trailersCompleter;
   Future<void> Function()? _cancelCallback;
 
+  // 실제 gRPC Response의 cancel 함수를 최신값으로 교체한다.
   void updateCancel(Future<void> Function()? cancelCallback) {
     _cancelCallback = cancelCallback;
   }
@@ -285,6 +301,7 @@ class _RetryingUnaryResponseFuture<R> extends DelegatingFuture<R>
   @override
   Future<void> cancel() {
     final cancel = _cancelCallback;
+    // cancel이 없다면 아무 일도 하지 않는 Future를 반환해 호출 측에서 예외가 나지 않게 한다.
     return cancel != null ? cancel() : Future.value();
   }
 }
