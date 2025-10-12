@@ -36,7 +36,7 @@ flowchart TD
     Z([종료])
 
     A --> B
-    B -->|아니오| C[ 그대로 호출(invoker) ]
+    B -->|아니오| C[그대로-호출(invoker) ]
     C --> Z
 
     B -->|예| D[토큰 읽기 → Authorization 주입]
@@ -46,7 +46,7 @@ flowchart TD
     G -->|아니오| Z
     G -->|예| H[refreshToken()]
     H -->|실패| Z
-    H -->|성공| J[토큰 재주입 후 재호출]
+    H -->|성공| J[토큰-재주입-후-재호출]
     J -->|성공| Z
     J -->|실패| Z
 ```
