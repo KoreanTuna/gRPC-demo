@@ -27,6 +27,28 @@ data layer에 있는 각 도메인/기능 별 datasource들은 gRPC module의 �
 2. `AuthInterceptor`가 Access Token을 Authorization 헤더로 주입하고, 401 응답 시 `TokenUsecase.refreshToken()`을 통해 한 번 재시도합니다.
 3. `LoggingInterceptor`가 요청/응답 Proto를 JSON으로 직렬화해 디버깅 로그를 남깁니다.
 
+flowchart TD
+    A[Client 호출\n(method, request, options)] --> B{_shouldInject?}
+    B -->|options.metadata[authFlagKey] == "true"| C[CallOptions에\nproviders: [_attachAccessToken] 병합]
+    B -->|아니오| X[그대로 invoker(method, request, options)] --> Z[호출 종료]
+
+    C --> D[_startUnaryCall]
+    D --> E[_invokeUnaryWithRetry 루프\nhasRetried=false]
+    E --> F[response = invoker(method, request, mergedOptions)]
+    F --> G{await response 성공?}
+    G -->|예| H[_completeMetadata(headers, trailers)]
+    H --> I[context.resultCompleter.complete(value)]
+    I --> Z[호출 종료]
+
+    G -->|아니오(에러)| J[_shouldRetryAfterRefreshingToken]
+    J --> K{GrpcError.unauthenticated && !hasRetried?}
+    K -->|예| L[토큰 갱신 시도\n_tokenUsecase().refreshToken()]
+    L --> M{갱신 성공?}
+    M -->|예| N[hasRetried=true\n루프 계속(재호출)]
+    M -->|아니오| O[_completeMetadata 후\nresultCompleter.completeError]
+    K -->|아니오| O
+    O --> Z
+
 ### 3. 채팅 양방향 스트리밍
 ```mermaid
 sequenceDiagram
