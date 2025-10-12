@@ -27,6 +27,7 @@ data layer에 있는 각 도메인/기능 별 datasource들은 gRPC module의 �
 2. `AuthInterceptor`가 Access Token을 Authorization 헤더로 주입하고, 401 응답 시 `TokenUsecase.refreshToken()`을 통해 한 번 재시도합니다.
 3. `LoggingInterceptor`가 요청/응답 Proto를 JSON으로 직렬화해 디버깅 로그를 남깁니다.
 
+
 flowchart TD
     A[Client 호출\n(method, request, options)] --> B{_shouldInject?}
     B -->|options.metadata[authFlagKey] == "true"| C[CallOptions에\nproviders: [_attachAccessToken] 병합]
@@ -48,6 +49,7 @@ flowchart TD
     M -->|아니오| O[_completeMetadata 후\nresultCompleter.completeError]
     K -->|아니오| O
     O --> Z
+
 
 ### 3. 채팅 양방향 스트리밍
 ```mermaid
