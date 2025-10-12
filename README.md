@@ -39,7 +39,7 @@ flowchart TD
     B -->|아니오| C[그대로 호출]
     C --> Z
 
-    B -->|예| D[토큰 읽기 → Authorization 주입 ]
+    B -->|예| D[토큰 읽기 → 토큰 주입 ]
     D --> E[호출]
     E -->|성공| Z
     E -->|에러| G{UNAUTHENTICATED 재시도}
