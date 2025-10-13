@@ -3,7 +3,7 @@
 
 ## 데모 서버 실행
 ```bash
-dart ./bin/server.dart
+dart bin/server.dart
 ```
 
 
