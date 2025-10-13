@@ -7,6 +7,8 @@ dart ./bin/server.dart
 ```
 
 
+# 소개
+
 gRPC를 Dart/Flutter에서 어떻게 구현하고 사용할 수 있는지를 데모로 만들었습니다.
 /app-proto 디렉토리에 proto를 작성해놨으며, 명령어를 통해 생성할 수 있습니다.
 
