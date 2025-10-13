@@ -1,5 +1,12 @@
 # gRPC Study Repo
 
+
+## 데모 서버 실행
+```bash
+dart ./bin/server.dart
+```
+
+
 gRPC를 Dart/Flutter에서 어떻게 구현하고 사용할 수 있는지를 데모로 만들었습니다.
 /app-proto 디렉토리에 proto를 작성해놨으며, 명령어를 통해 생성할 수 있습니다.
 
@@ -87,6 +94,7 @@ sequenceDiagram
 - `GrpcOptions`: Unary/Streaming CallOptions에 타임아웃과 공통 메타데이터를 적용합니다.
 - `GrpcBidirectionalStreamHandler`: 양방향 스트림을 열고, 응답 스트림을 `Result`로 변환하며, 구독/종료/에러 처리를 캡슐화합니다.
 - `grpc/interceptor/*`: 인증 토큰 주입, 재시도, Proto JSON 로깅 등 클라이언트 공통 교차 관심사를 분리합니다.
+
 
 # gRPC Proto 파일 생성 명령어
 
