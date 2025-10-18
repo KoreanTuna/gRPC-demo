@@ -67,6 +67,7 @@ abstract class GrpcModule {
   }) {
     return ClientChannel(
       ApiConfig.baseUrl,
+
       port: ApiConfig.gRpcPort,
       options: ChannelOptions(
         connectTimeout: connectTimeout,

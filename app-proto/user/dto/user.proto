@@ -1,0 +1,26 @@
+syntax = "proto3";
+package user.v1;
+
+import "google/protobuf/timestamp.proto";
+option java_multiple_files = true;
+
+
+message User {
+    string id = 1;                          
+    UserType type = 2;
+    string displayName = 3;                 
+    google.protobuf.Timestamp createdAt = 4;
+    repeated string roles = 5;   
+    optional string email = 6;
+     string legacy_field = 7 [deprecated = true];
+
+
+    enum UserType {
+        USER_TYPE_UNSPECIFIED = 0;
+        USER_TYPE_NORMAL      = 1;
+        USER_TYPE_ADMIN       = 2;
+        USER_TYPE_GUEST       = 3;
+        ORDER_STATUS_CANCELLED   = 4 [deprecated = true]; 
+    }
+}
+
