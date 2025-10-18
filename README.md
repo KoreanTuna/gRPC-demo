@@ -85,6 +85,37 @@ sequenceDiagram
   note right of Server: 서버 응답이 끝나면 스트림 종료
 ```
 
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as Flutter Client
+    participant G as Dart gRPC(h2 stream)
+    participant S as gRPC Server
+
+    Note over C,S: 단일 HTTP/2 연결(스트림 1개) 위에서 동시 양방향 전송
+
+    C->>G: Headers(:method=POST, :path=/Service/Bidi)
+    G->>S: Headers 전달
+
+    par 클라이언트→서버
+        C--)G: DATA: msg C1
+        C--)G: DATA: msg C2
+        C--)G: DATA: msg C3
+        G--)S: (그대로 전달)
+    and 서버→클라이언트
+        S--)G: DATA: msg S1
+        S--)G: DATA: msg S2
+        G--)C: (그대로 전달)
+    end
+
+    C-->>G: Half-close(요청 종료)
+    G-->>S: Half-close 전달
+
+    S-->>G: Trailers(grpc-status=0)
+    G-->>C: Trailers 전달
+```
+
 `ChatDatasource`는 `GrpcDatasourceBase`를 상속받아 DI로 주입된 스트리밍 전용 채널(`@Named('stream_channel')`)과 인터셉터를 재사용합니다. 스트림 연결과 해제를 `GrpcBidirectionalStreamHandler`가 담당하며, 모든 응답을 `Result` 타입으로 래핑해 도메인이 통일된 오류 처리를 수행할 수 있게 합니다.
 
 ## 토큰 수명주기
