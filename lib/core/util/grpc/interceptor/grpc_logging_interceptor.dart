@@ -40,8 +40,10 @@ class LoggingInterceptor implements ClientInterceptor {
         .catchError((e) async {
           final errorLog = _formatError(e);
           final header = await res.headers;
+          final trailers = await res.trailers;
+
           logger.e(
-            '[gRPC ERROR] : ${method.path} err=$errorLog  HEADER : $header',
+            '[gRPC ERROR] : ${method.path} err=$errorLog  HEADER : $header  TRAILERS : $trailers',
           );
         });
 

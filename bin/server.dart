@@ -55,9 +55,11 @@ class ChatService extends ChatServiceBase {
     await for (final receiveMessage in request) {
       final sendMessage = SendMessage()
         ..id = receiveMessage.id
-        ..message = receiveMessage.message
+        ..message = '${receiveMessage.message} (서버에서 응답)'
         ..timestamp = receiveMessage.timestamp
         ..type = receiveMessage.type;
+
+      await Future.delayed(const Duration(milliseconds: 500));
       yield sendMessage;
     }
   }
